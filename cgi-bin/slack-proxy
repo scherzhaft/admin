@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+### changed files
+##  git show --pretty=format:" --name-only %rev 
+##
+##  git show --pretty="format:" --name-only bfaa897703ac4b4e8daf129579d8006a7b75663c..3d34a1511bdae86146b610214b119f37fc51af7f|grep '.'
+##
+## git archive --format zip --output /tmp/test.zip master roles/pkg-get
+##
+## git=awesome, dump role for dl as zip
+# git archive --format zip --output /tmp/test.zip master:roles/ pkg-get
+#
+##
+##
+##cksum of given role
+##git archive --format tar  master:roles/ pkg-get|tar -xOf - |cksum -
+
+
+
+##list of roles
+##git show master:roles/
+#
+#
+test "X${1}" = "X" && exit
+cd /unix_ops/roles.export || exit
+
+
+echo "Content-type: text/plain"
+echo ""
+
+
+ARGS="$(echo "$1"|awk -F\. {'print $1'})"
+
+case "${ARGS}" in
+  "")
+    exit
+  ;;
+
+  LIST)
+    GITLS="$(ls *.zip)"
+    cksum ${GITLS}|perl -p -e "s|\.zip$||g"|awk {'print $3"|"$1" "$2'}
+  ;;
+
+  *)
+    test -f "${ARGS}" && cat "${ARGS}"
+    test -f "${ARGS}.zip" && cat "${ARGS}.zip"
+    
+    
+esac
