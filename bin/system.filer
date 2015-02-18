@@ -1,0 +1,51 @@
+#!/bin/bash -x
+
+
+
+doit()
+{
+cd /unix_ops || exit $?
+. /etc/default/SYSconstants
+INCOMING='/unix_ops/system.INCOMING'
+SYSDIR='/unix_ops/system'
+EPOC=`__getepoc`
+DNSDOMAIN="${__DNSDOMAIN}"
+
+test "X${EPOC}" = "X" && exit 1
+test "X${DNSDOMAIN}" = "X" && exit exit 5
+test -d "${INCOMING}" || exit 0
+touch "${INCOMING}" || exit 2
+lsof "${INCOMING}" || {
+  mv "${INCOMING}" "${INCOMING}.${EPOC}" || exit 3
+  UPLOADS=`find ${INCOMING}.${EPOC}/*/opt/unix_ops/report/sysupdate.report.zip`
+  for uload in `echo "${UPLOADS}"` ; do
+    hname=`unzip -p "${uload}" uname.out|head -1|awk {'print $2'}`
+    test "X${hname}" = "X" && continue
+    echo "${hname}"|grep "${DNSDOMAIN}" || hname=`echo "${hname}.${DNSDOMAIN}"|perl -p -e "s|\.mil.*\.mil|\.mil|g"`
+
+    hnamefqdn="${hname}"
+    mkdir -p "${SYSDIR}/${hnamefqdn}" || exit 4
+    chmod -R 775 "${SYSDIR}/${hnamefqdn}"
+    ULIST=`unzip -o "${uload}" -d "${SYSDIR}/${hnamefqdn}"|grep ": ${SYSDIR}/${hnamefqdn}/"|perl -p -e "s|^.*: ${SYSDIR}/${hnamefqdn}/|${SYSDIR}/${hnamefqdn}/|g"`
+    chmod -R 775 "${SYSDIR}/${hnamefqdn}"
+ ##read test
+    test "X${ULIST}" != "X" && {
+      git add ${ULIST}
+      git commit -m 'sysupdate: system info update' --author=\""${hnamefqdn} <hqunixadmins@${DNSDOMAIN}>"\" ${ULIST}
+      }
+    done
+  git pull --no-commit origin master
+  test -f /unix_ops/.git/COMMIT_EDITMSG && git commit -F /unix_ops/.git/COMMIT_EDITMSG --author=\""${hnamefqdn} <foo@${FOO}>"\"
+  sleep 2
+  git push origin master
+  rm -rf "${INCOMING}.${EPOC}"
+
+  }
+
+
+}
+
+####doit >>/tmp/log 2>&1
+doit >/dev/null 2>&1
+
+

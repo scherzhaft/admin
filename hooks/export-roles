@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Dump said slackrole(s) from git to a .zip
+
+
+set -x
+##REPO=/unix_ops/master.git
+DESTDIR=/unix_ops/roles.export
+##cd "${REPO}" || exit 1
+ARGS="$@"
+test "X${ARGS}" = "X" && exit 2
+
+
+########
+# Main #
+########
+
+for role in ${ARGS} ; do
+  set -x
+  git archive --output="${DESTDIR}/${role}.zip" master:roles "${role}" || {
+    echo "error dumping role: ${role}"
+    rm -f "${DESTDIR}/${role}.zip"
+  }
+  set +x
+done
+
+
+exit 0
+

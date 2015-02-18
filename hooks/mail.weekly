@@ -1,0 +1,11 @@
+#!/bin/bash -x
+
+TODAY=`date +%Y-%m-%d`
+MESGF="$1"
+test "X${MESGF}" = "X" && MESGF=""
+cd /unix_ops/master.git || exit 1 
+MESG="$(git log --format=%s --since=1.week --author=stecker|sort -u|grep '.'|grep -v -i merge)"
+TODAY=`date +%Y-%m-%d`
+test "X${MESG}" != "X" && echo  "${MESG}"|perl -p -e "s|\n|\n\n|g"|mailx -r foo@foo  -s "Weekly: ${TODAY}" foo@foo,foo1@foo1,foo2@foo2
+
+
