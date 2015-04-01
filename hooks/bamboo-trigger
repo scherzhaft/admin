@@ -31,11 +31,11 @@ ADDTEST="$(echo "${CHANGETYPE}"|grep -E '(^A|^M|^U|^D)')"
 ADDTESTSTATUS="$?"
 ####ROLE="$(echo "${CHANGEPATHS}" | cut -f3 -d/ | head -1)"
 TREES="$(echo "${CHANGEPATHS}" | awk -F\/ {'print $1'} )"
-ROLES="$(echo "${CHANGEPATHS}" | grep -E "(^roles/[^\/]+/.*)" | awk -F\/ {'print $2'} | sort -u )"
+ROLES="$(echo "${CHANGEPATHS}" | grep -E "(^[^\/]+/.*)" | awk -F\/ {'print $1'} | sort -u )"
 
 echo "${ROLES}"
 
-test "X${ROLES}" != "X" && "./${HOOKSDIR}/export-roles" "${ROLES}"
+test "X${ROLES}" != "X" && "./${HOOKSDIR}/export-roles-ghub" "${ROLES}"
 
 exit 0
 
