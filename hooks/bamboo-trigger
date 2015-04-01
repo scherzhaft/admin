@@ -8,7 +8,7 @@ test "X${bamboo_agentWorkingDirectory}" = "X" && exit 1
 REPO=`ls -d ${bamboo_agentWorkingDirectory}/_git-repositories-cache/*/.git`
 test "X${REPO}" = "X" && exit 2
 
-
+export REPO
 echo "This is $0"
 tty
 

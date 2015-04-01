@@ -4,6 +4,7 @@
 
 
 set -x
+test "X${REPO}" != "X" &&  REPO=" --git-dir=${REPO} "
 ##REPO=/unix_ops/master.git
 DESTDIR=/unix_ops/roles.export
 ##cd "${REPO}" || exit 1
@@ -17,7 +18,7 @@ test "X${ARGS}" = "X" && exit 2
 
 for role in ${ARGS} ; do
   set -x
-  git archive --output="${DESTDIR}/${role}.zip" master:roles "${role}" || {
+  git  ${REPO} archive   --output="${DESTDIR}/${role}.zip" master:roles "${role}" || {
     echo "error dumping role: ${role}"
     rm -f "${DESTDIR}/${role}.zip"
   }
