@@ -18,7 +18,7 @@ test "X${ARGS}" = "X" && exit 2
 
 for role in ${ARGS} ; do
   set -x
-  git  ${REPO} archive   --output="${DESTDIR}/${role}.zip" master:roles "${role}" || {
+  git  ${REPO} archive   --output="${DESTDIR}/${role}.zip" master "${role}" || {
     echo "error dumping role: ${role}"
     rm -f "${DESTDIR}/${role}.zip"
   }
