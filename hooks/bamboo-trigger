@@ -35,7 +35,7 @@ ROLES="$(echo "${CHANGEPATHS}" | grep -E "(^[^\/]+/.*)" | awk -F\/ {'print $1'} 
 
 echo "${ROLES}"
 
-test "X${ROLES}" != "X" && "./${HOOKSDIR}/export-roles-ghub" "${ROLES}"
+test "X${ROLES}" != "X" && "${HOOKSDIR}/export-roles-ghub" "${ROLES}"
 
 exit 0
 
