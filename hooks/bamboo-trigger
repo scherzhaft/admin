@@ -1,0 +1,42 @@
+#!/bin/bash -x
+
+{
+set -x
+HOOKSDIR=`dirname $0`
+CWD="$(pwd)"
+test "X${bamboo_agentWorkingDirectory}" = "X" && exit 1
+REPO=`ls -d ${bamboo_agentWorkingDirectory}/_git-repositories-cache/*/.git`
+test "X${REPO}" = "X" && exit 2
+
+
+echo "This is $0"
+tty
+
+echo stdin
+##STDIN="$(cat - )"
+STDIN="${bamboo_planRepository_previousRevision} ${bamboo_planRepository_revision}"
+
+RANGE="$(echo "${STDIN}"|awk {'print $1".."$2'})"
+
+echo args
+echo "$@"
+
+
+## changed files
+##git show --pretty="format:" --name-only ${RANGE}|grep '.'
+CHANGE="$(git  --git-dir=${REPO}  log  --name-status --pretty="format:" ${RANGE}|grep '.')"
+CHANGETYPE="$(echo "${CHANGE}"|awk {'print $1'})"
+CHANGEPATHS="$(echo "${CHANGE}"|awk {'print $2'})"
+ADDTEST="$(echo "${CHANGETYPE}"|grep -E '(^A|^M|^U|^D)')"
+ADDTESTSTATUS="$?"
+####ROLE="$(echo "${CHANGEPATHS}" | cut -f3 -d/ | head -1)"
+TREES="$(echo "${CHANGEPATHS}" | awk -F\/ {'print $1'} )"
+ROLES="$(echo "${CHANGEPATHS}" | grep -E "(^roles/[^\/]+/.*)" | awk -F\/ {'print $2'} | sort -u )"
+
+echo "${ROLES}"
+
+test "X${ROLES}" != "X" && "./${HOOKSDIR}/export-roles" "${ROLES}"
+
+exit 0
+
+} >> /tmp/test2.log 2>&1
