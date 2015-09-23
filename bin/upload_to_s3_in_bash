@@ -1,3 +1,5 @@
+#### from http://tmont.com/blargh/2014/1/uploading-to-s3-in-bash
+
 file=/path/to/file/to/upload.tar.gz
 bucket=your-bucket
 resource="/${bucket}/${file}"
