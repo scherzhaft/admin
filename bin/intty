@@ -1,0 +1,12 @@
+#!/usr/bin/expect
+if { $argc == 0 } {
+        exit
+}
+
+set timeout 20
+spawn {*}$argv 
+expect eof
+catch wait result
+exit [lindex $result 3]
+
+
